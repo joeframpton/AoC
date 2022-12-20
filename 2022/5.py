@@ -1,5 +1,7 @@
-with open('Data/5.txt') as fin:
-    input = fin.read()
+def openfile():
+    with open('Data/5.txt') as fin:
+        input = fin.read()
+    return input
 
 stack = {
     1 : ['W', 'D', 'G', 'B', 'H', 'R', 'V'],
@@ -19,38 +21,45 @@ REPLACEMENTS =[
     ('move ', '')
 ]
 
-for old, new in REPLACEMENTS:
-    input = input.replace(old, new)
+def create_instructions(REPLACEMENTS):
+    input = openfile()
 
-input = list(input.split('\n'))
-input = input[10:-1]
-instructions =[]
-for item in input:
-    item = item.split(',')
-    item = list(map(int, item))
-    instructions.append(item)
+    for old, new in REPLACEMENTS:
+        input = input.replace(old, new)
 
+    input = list(input.split('\n'))
+    input = input[10:-1]
+    instructions =[]
+    for item in input:
+        item = item.split(',')
+        item = list(map(int, item))
+        instructions.append(item)
+    return instructions
 
-#for line in instructions:
-#    count = line[0]
-#    crane = []
-#    while count > 0:    
-#        crane.append(stack[line[1]].pop())
-#        count -= 1
-#    stack[line[2]].extend(crane)
+instructions = create_instructions(REPLACEMENTS)
 
-for line in instructions:
-    pivot = len(stack[line[1]]) - line[0]
-    print(pivot)
-    crane = []
-    crane.extend(stack[line[1]])
-    del stack[line[1]][pivot:]
-    del crane[:pivot]
-    stack[line[2]].extend(crane)
+def rearrange_stack(stack, instructions):
 
-string_code = ""
-for i in range(1, 10):
-    string_code += stack[i][-1]
-    print([stack[i][-1]])
+    #for line in instructions:
+    #    count = line[0]
+    #    crane = []
+    #    while count > 0:    
+    #        crane.append(stack[line[1]].pop())
+    #        count -= 1
+    #    stack[line[2]].extend(crane)
 
-print(string_code)
+    for line in instructions:
+        pivot = len(stack[line[1]]) - line[0]
+        crane = []
+        crane.extend(stack[line[1]])
+        del stack[line[1]][pivot:]
+        del crane[:pivot]
+        stack[line[2]].extend(crane)
+
+    string_code = ""
+    for i in range(1, 10):
+        string_code += stack[i][-1]
+
+    return string_code
+
+print(rearrange_stack(stack, instructions))
