@@ -129,3 +129,6 @@ dmypy.json
 .pyre/
 
 /2022/testing.py
+
+# Hiding Inputs
+**/*.txt
