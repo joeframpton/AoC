@@ -15,7 +15,9 @@ symbols = [sym for sym in symbols if sym != "."]
 #symbols = '#!@*/\%=-<>|?:;[]&^$¬+`'
 
 total = 0
+gears = [] 
 previous_line = []
+
 
 for line in data:
     number = False
@@ -45,8 +47,14 @@ for line in data:
             
         if letter in symbols:
             number = False
-            coded_line.append(dict(symbol = dict(index = i)))
-            symbol_indeces.append(i)
+            if letter == '*':
+                coded_line.append(dict(symbol = dict(index = i,
+                                                     gear = True,
+                                                     nums = [])))           
+            else: 
+                coded_line.append(dict(symbol = dict(index = i)))
+                symbol_indeces.append(i)
+
 
     for entry in previous_line:
         if 'symbol' in entry.keys():
@@ -55,27 +63,40 @@ for line in data:
                 if 'number' in item.keys():
                     number_index_range = range(item['number']['index_start'] - 1, item['number']['index_end'] + 2)
                     if symbol_index in number_index_range:
-                        print(item['number']['number'])
                         total += item['number']['number']
-                        #coded_line.remove(item)
+                        if 'gear' in entry['symbol'].keys():
+                            entry['symbol']['nums'].append(item['number']['number'])
+            if 'gear' in entry['symbol'].keys():
+                gears.append(entry)
+                        
 
-    for index in symbol_indeces:
-        for item in previous_line:
-            if 'number' in item.keys():
-                number_index_range = range(item['number']['index_start']-1, item['number']['index_end'] + 2)
-                if index in number_index_range:
-                    print(item['number']['number'])
-                    total += item['number']['number']
-                    #previous_line.remove(item)
+    for i in coded_line:
+        if 'symbol' in i.keys():
+            for item in previous_line:
+                if 'number' in item.keys():
+                    number_index_range = range(item['number']['index_start']-1, item['number']['index_end'] + 2)
+                    if i['symbol']['index'] in number_index_range:
+                        total += item['number']['number']
+                        if 'gear' in i['symbol'].keys():
+                            i['symbol']['nums'].append(item['number']['number'])
+                    
 
 
-        for item in coded_line:
-            if 'number' in item.keys():
-                number_index_range = range(item['number']['index_start'] - 1, item['number']['index_end'] + 2)
-                if index in number_index_range:
-                    print(item['number']['number'])
-                    total += item['number']['number']
-                    #coded_line.remove(item)
+            for item in coded_line:
+                if 'number' in item.keys():
+                    number_index_range = range(item['number']['index_start'] - 1, item['number']['index_end'] + 2)
+                    if i['symbol']['index'] in number_index_range:
+                        total += item['number']['number']
+                        if 'gear' in i['symbol'].keys():
+                            i['symbol']['nums'].append(item['number']['number'])
+                    
 
     previous_line = coded_line
 print(total)
+
+gear_sum = 0
+for gear in gears:
+    if len(gear['symbol']['nums']) == 2:
+        gear_sum += gear['symbol']['nums'][0] * gear['symbol']['nums'][1]
+
+print(gear_sum)
